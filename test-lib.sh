@@ -74,6 +74,7 @@ function ct_pull_image() {
       return 0
     else
       exit 0
+    fi
   fi
 
   # Try pulling the image to see if it is accessible
@@ -813,7 +814,7 @@ ct_check_image_availability() {
   local public_image_name=$1;
 
   # Try pulling the image to see if it is accessible
-  if ! docker pull "$public_image_name" &>/dev/null; then
+  if ! ct_pull_image "$public_image_name" &>/dev/null; then
     echo "$public_image_name could not be downloaded via 'docker'"
     return 1
   fi
