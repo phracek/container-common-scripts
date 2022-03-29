@@ -1184,6 +1184,34 @@ function ct_timestamp_diff() {
   local start_date=$1
   local final_date=$2
   date -u -d "0 $final_date seconds - $start_date seconds" +"%H:%M:%S"
+
+# ct_get_certificate_timestamp
+# ----------------------------
+# Looks into a running container into a specified file (certificate) and extracts
+# a notBefore date.
+# Argument: container - ID of a running container
+# Argument: path - path inside the running container
+# Returns: timestamp (seconds since Unix era) for the certificate generation
+function ct_get_certificate_timestamp() {
+  local container=$1
+  local path=$2
+  date '+%s' --date="$(docker exec -ti "$container" bash -c "cat $path" | openssl x509  -startdate -noout | grep notBefore | sed -e 's/notBefore=//')"
+}
+
+# ct_get_certificate_age_s
+# ------------------------
+# Looks into a running container into a specified file and retuns age of the certificate
+# Argument: container - ID of a running container
+# Argument: path - path inside the running container
+# Returns: age of the certificate in seconds
+function ct_get_certificate_age_s() {
+  local container=$1
+  local path=$2
+  local now
+  local cert_timestamp
+  now=$(date '+%s')
+  cert_timestamp=$(ct_get_certificate_timestamp "$container" "$path")
+  echo $(( now - cert_timestamp ))
 }
 
 # vim: set tabstop=2:shiftwidth=2:expandtab:
