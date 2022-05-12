@@ -1195,7 +1195,12 @@ function ct_timestamp_diff() {
 function ct_get_certificate_timestamp() {
   local container=$1
   local path=$2
-  date '+%s' --date="$(docker exec -ti "$container" bash -c "cat $path" | openssl x509  -startdate -noout | grep notBefore | sed -e 's/notBefore=//')"
+set -x
+which openssl >&2
+rpm -qf $(which openssl) >&2
+docker exec "$container" bash -c "cat $path"  >&2
+docker exec "$container" bash -c "cat $path" | openssl x509  -startdate -noout >&2
+  date '+%s' --date="$(docker exec "$container" bash -c "cat $path" | openssl x509  -startdate -noout | grep notBefore | sed -e 's/notBefore=//')"
 }
 
 # ct_get_certificate_age_s
