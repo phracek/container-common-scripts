@@ -1214,4 +1214,24 @@ function ct_get_certificate_age_s() {
   echo $(( now - cert_timestamp ))
 }
 
+# ct_get_image_age_s
+# ------------------
+# Retuns age of a given image in seconds
+# Argument: image_name - name of a given image
+# Returns: age of the image in seconds
+function ct_get_image_age_s() {
+  local image_name=$1
+  local now
+  local image_created
+  local image_timestamp
+  now=$(date '+%s')
+	# docker inspect returns format <date> <time> <timezone_diff> <timezone_name>
+	# with is not understood by the date utility. Removing the <timezone_name> does
+	# not change the meaning of the time, so we can safely remove it, which makes
+	# the format read-able by the date utility
+  image_created=$(docker inspect -f '{{.Created}}' "${image_name}" | awk '{print $1, $2, $3}')
+  image_timestamp=$(date -d "${image_created}" '+%s')
+  echo $(( now - image_timestamp ))
+}
+
 # vim: set tabstop=2:shiftwidth=2:expandtab:
