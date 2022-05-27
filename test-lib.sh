@@ -1184,6 +1184,7 @@ function ct_timestamp_diff() {
   local start_date=$1
   local final_date=$2
   date -u -d "0 $final_date seconds - $start_date seconds" +"%H:%M:%S"
+}
 
 # ct_get_certificate_timestamp
 # ----------------------------
